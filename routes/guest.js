@@ -51,7 +51,7 @@ router.post("/guest", async (req, res) => {
 /*Afficher un invité (et sa famille) */
 router.get("/guest", async (req, res) => {
   try {
-    const { first_name, last_name } = req.body;
+    const { first_name, last_name } = req.query;
 
     if (!first_name || !last_name) {
       return res
