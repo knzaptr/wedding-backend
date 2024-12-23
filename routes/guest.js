@@ -48,7 +48,7 @@ router.post("/guest", async (req, res) => {
   }
 });
 
-/*Afficher un invité (et sa famille) */
+/*Afficher un invité*/
 router.get("/guest", async (req, res) => {
   try {
     const { first_name, last_name } = req.query;
@@ -69,6 +69,19 @@ router.get("/guest", async (req, res) => {
     }
 
     return res.status(200).json(guestToDisplay);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+/*Afficher une famille */
+router.get("/family-member", async (req, res) => {
+  try {
+    const familyId = req.query.familyId;
+    const familyMembers = await Guest.find({ family: familyId });
+    console.log(familyMembers);
+
+    return res.status(200).json(familyMembers);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
