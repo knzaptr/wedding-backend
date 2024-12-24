@@ -5,7 +5,7 @@ const Guest = mongoose.model("Guest", {
   lastName: String,
   isComing: Boolean,
   mealChoice: String,
-  allergies: Array,
+  allergies: String,
   plusOne: { type: Boolean, default: false },
   plusOneOf: String,
   family: {
