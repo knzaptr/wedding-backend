@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const Family = mongoose.model("Family", {
-  family_name: String,
+  familyName: String,
   members: Array,
 });
 

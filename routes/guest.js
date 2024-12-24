@@ -8,17 +8,17 @@ require("dotenv").config();
 /*Add a new guest*/
 router.post("/guest", async (req, res) => {
   try {
-    const { first_name, last_name, plus_one, family } = req.body;
+    const { firstName, lastName, plusOne, family } = req.body;
 
-    if (!first_name || !last_name) {
+    if (!firstName || !lastName) {
       return res
         .status(409)
         .json({ message: "Veuillez remplir tous les champs" });
     }
 
     const verifyGuest = await Guest.findOne({
-      first_name: first_name,
-      last_name: last_name,
+      firstName: firstName,
+      lastName: lastName,
     });
 
     if (verifyGuest) {
@@ -26,9 +26,9 @@ router.post("/guest", async (req, res) => {
     }
 
     const newGuest = new Guest({
-      first_name: first_name,
-      last_name: last_name,
-      plus_one: plus_one,
+      firstName: firstName,
+      lastName: lastName,
+      plusOne: plusOne,
       family: family,
     });
 
@@ -51,17 +51,17 @@ router.post("/guest", async (req, res) => {
 /*Afficher un invité*/
 router.get("/guest", async (req, res) => {
   try {
-    const { first_name, last_name } = req.query;
+    const { firstName, lastName } = req.query;
 
-    if (!first_name || !last_name) {
+    if (!firstName || !lastName) {
       return res
         .status(409)
         .json({ message: "veuillez remplir tous les champs" });
     }
 
     const guestToDisplay = await Guest.findOne({
-      first_name: first_name,
-      last_name: last_name,
+      firstName: firstName,
+      lastName: lastName,
     }).populate("family");
 
     if (!guestToDisplay) {
@@ -90,20 +90,20 @@ router.get("/family-member", async (req, res) => {
 /*Modifier les infos d'un invité */
 router.put("/guest", async (req, res) => {
   try {
-    const { first_name, last_name, meal_choice, allergies } = req.body;
+    const { firstName, lastName, mealChoice, allergies } = req.body;
 
-    if (!first_name || !last_name || !meal_choice) {
+    if (!firstName || !lastName || !mealChoice) {
       return res
         .status(409)
         .json({ message: "Veuillez remplir tous les champs" });
     }
 
     const guestToDisplay = await Guest.findOne({
-      first_name: first_name,
-      last_name: last_name,
+      firstName: firstName,
+      lastName: lastName,
     });
 
-    guestToDisplay.meal_choice = meal_choice;
+    guestToDisplay.mealChoice = mealChoice;
     guestToDisplay.allergies = allergies;
     await guestToDisplay.save();
     return res.status(200).json(guestToDisplay);
@@ -123,28 +123,28 @@ router.get("/guests", async (req, res) => {
 });
 
 /*Ajouter un plus one */
-router.post("/plus_one", async (req, res) => {
+router.post("/plusOne", async (req, res) => {
   try {
     const {
-      first_name,
-      last_name,
-      first_name_plus_one,
-      last_name_plus_one,
-      meal_choice_plus_one,
-      allergies_plus_one,
+      firstName,
+      lastName,
+      firstName_plusOne,
+      lastName_plusOne,
+      mealChoice_plusOne,
+      allergies_plusOne,
     } = req.body;
 
     // Trouver l'invité
     const guestToDisplay = await Guest.findOne({
-      first_name: first_name,
-      last_name: last_name,
+      firstName: firstName,
+      lastName: lastName,
     });
 
     if (!guestToDisplay) {
       return res.status(404).json({ error: "Invité introuvable" });
     }
 
-    if (!guestToDisplay.plus_one) {
+    if (!guestToDisplay.plusOne) {
       return res
         .status(400)
         .json({ error: "Plus-one déjà utilisé pour cet invité." });
@@ -152,23 +152,23 @@ router.post("/plus_one", async (req, res) => {
 
     // Ajouter une nouvelle famille si nécessaire
     const newFamily = new Family({
-      family_name: guestToDisplay.last_name,
+      family_name: guestToDisplay.lastName,
       members: [guestToDisplay._id],
     });
     await newFamily.save();
 
     // Mettre à jour la famille de l'invité initial
     guestToDisplay.family = newFamily._id;
-    guestToDisplay.plus_one = false;
+    guestToDisplay.plusOne = false;
     await guestToDisplay.save();
 
     // Ajouter le plus-one comme un nouvel invité
     if (
-      !first_name ||
-      !last_name ||
-      !first_name_plus_one ||
-      !last_name_plus_one ||
-      !meal_choice_plus_one
+      !firstName ||
+      !lastName ||
+      !firstName_plusOne ||
+      !lastName_plusOne ||
+      !mealChoice_plusOne
     ) {
       return res
         .status(409)
@@ -176,10 +176,10 @@ router.post("/plus_one", async (req, res) => {
     }
 
     const newGuest = new Guest({
-      first_name: first_name_plus_one,
-      last_name: last_name_plus_one,
-      meal_choice: meal_choice_plus_one,
-      allergies: allergies_plus_one,
+      firstName: firstName_plusOne,
+      lastName: lastName_plusOne,
+      mealChoice: mealChoice_plusOne,
+      allergies: allergies_plusOne,
       family: newFamily._id,
     });
     await newGuest.save();

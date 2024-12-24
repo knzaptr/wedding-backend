@@ -7,9 +7,9 @@ require("dotenv").config();
 /*Add a new family*/
 router.post("/family", async (req, res) => {
   try {
-    const { family_name, members } = req.body;
+    const { familyName, members } = req.body;
     const newFamily = new Family({
-      family_name: family_name,
+      familyName: familyName,
       members: members,
     });
 

@@ -1,11 +1,13 @@
 const mongoose = require("mongoose");
 
 const Guest = mongoose.model("Guest", {
-  first_name: String,
-  last_name: String,
-  meal_choice: String,
+  firstName: String,
+  lastName: String,
+  isComing: Boolean,
+  mealChoice: String,
   allergies: Array,
-  plus_one: { type: Boolean, default: false },
+  plusOne: { type: Boolean, default: false },
+  plusOneOf: String,
   family: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Family",
