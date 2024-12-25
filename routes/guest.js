@@ -90,9 +90,9 @@ router.get("/family-member", async (req, res) => {
 /*Modifier les infos d'un invité */
 router.put("/guest", async (req, res) => {
   try {
-    const { firstName, lastName, mealChoice, allergies } = req.body;
+    const { firstName, lastName, mealChoice, allergies, isComing } = req.body;
 
-    if (!firstName || !lastName || !mealChoice) {
+    if (!firstName || !lastName) {
       return res
         .status(409)
         .json({ message: "Veuillez remplir tous les champs" });
@@ -105,6 +105,7 @@ router.put("/guest", async (req, res) => {
 
     guestToDisplay.mealChoice = mealChoice;
     guestToDisplay.allergies = allergies;
+    guestToDisplay.isComing = isComing;
     await guestToDisplay.save();
     return res.status(200).json(guestToDisplay);
   } catch (error) {
