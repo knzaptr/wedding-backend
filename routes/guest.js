@@ -103,8 +103,12 @@ router.put("/guest", async (req, res) => {
       lastName: lastName,
     });
 
-    guestToDisplay.mealChoice = mealChoice;
-    guestToDisplay.allergies = allergies;
+    if (mealChoice) {
+      guestToDisplay.mealChoice = mealChoice;
+    }
+    if (allergies) {
+      guestToDisplay.allergies = allergies;
+    }
     guestToDisplay.isComing = isComing;
     await guestToDisplay.save();
     return res.status(200).json(guestToDisplay);
