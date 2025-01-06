@@ -3,9 +3,9 @@ const mongoose = require("mongoose");
 const Guest = mongoose.model("Guest", {
   firstName: String,
   lastName: String,
-  isComing: Boolean,
+  isComing: { type: Boolean, default: false },
   mealChoice: String,
-  allergies: String,
+  allergies: { type: String, default: "None" },
   plusOne: { type: Boolean, default: false },
   plusOneOf: String,
   family: {
