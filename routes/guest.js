@@ -135,6 +135,7 @@ router.post("/plusOne", async (req, res) => {
       lastName,
       firstName_plusOne,
       lastName_plusOne,
+      isComing_plusOne,
       allergies_plusOne,
     } = req.body;
 
@@ -156,7 +157,7 @@ router.post("/plusOne", async (req, res) => {
 
     // Ajouter une nouvelle famille si nécessaire
     const newFamily = new Family({
-      family_name: guestToDisplay.lastName,
+      family_name: lastName,
       members: [guestToDisplay._id],
     });
     await newFamily.save();
@@ -177,6 +178,7 @@ router.post("/plusOne", async (req, res) => {
       firstName: firstName_plusOne,
       lastName: lastName_plusOne,
       allergies: allergies_plusOne,
+      isComing: isComing_plusOne,
       family: newFamily._id,
       plusOneOf: `${lastName} ${firstName}`,
     });
