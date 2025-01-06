@@ -26,8 +26,8 @@ router.post("/guest", async (req, res) => {
     }
 
     const newGuest = new Guest({
-      firstName: firstName,
-      lastName: lastName,
+      firstName: firstName.toLowerCase(),
+      lastName: lastName.toLowerCase(),
       plusOne: plusOne,
       family: family,
     });
@@ -135,7 +135,6 @@ router.post("/plusOne", async (req, res) => {
       lastName,
       firstName_plusOne,
       lastName_plusOne,
-      mealChoice_plusOne,
       allergies_plusOne,
     } = req.body;
 
@@ -168,13 +167,7 @@ router.post("/plusOne", async (req, res) => {
     await guestToDisplay.save();
 
     // Ajouter le plus-one comme un nouvel invité
-    if (
-      !firstName ||
-      !lastName ||
-      !firstName_plusOne ||
-      !lastName_plusOne ||
-      !mealChoice_plusOne
-    ) {
+    if (!firstName || !lastName || !firstName_plusOne || !lastName_plusOne) {
       return res
         .status(409)
         .json({ message: "veuillez remplir tous les champs" });
@@ -183,9 +176,9 @@ router.post("/plusOne", async (req, res) => {
     const newGuest = new Guest({
       firstName: firstName_plusOne,
       lastName: lastName_plusOne,
-      mealChoice: mealChoice_plusOne,
       allergies: allergies_plusOne,
       family: newFamily._id,
+      plusOneOf: `${lastName} ${firstName}`,
     });
     await newGuest.save();
 
