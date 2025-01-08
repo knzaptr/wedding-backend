@@ -118,8 +118,8 @@ router.put("/guest", async (req, res) => {
   }
 });
 
-/*Afficher les invités */
-router.get("/guests", async (req, res) => {
+/*Afficher tous les invités */
+router.get("/guests", isAdmin, async (req, res) => {
   try {
     const allGuest = await Guest.find();
     return res.status(200).json(allGuest);
