@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Guest = require("../models/Guest");
 const Family = require("../models/Family");
+const isAdmin = require("../middleware/isAdmin");
 
 require("dotenv").config();
 
@@ -177,8 +178,8 @@ router.post("/plusOne", async (req, res) => {
     const newGuest = new Guest({
       firstName: firstName_plusOne,
       lastName: lastName_plusOne,
-      allergies: allergies_plusOne,
       isComing: isComing_plusOne,
+      allergies: allergies_plusOne,
       family: newFamily._id,
       plusOneOf: `${lastName} ${firstName}`,
     });
