@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const familyRouter = require("./routes/family");
 const guestRouter = require("./routes/guest");
+const adminRouter = require("./routes/admin");
 
 require("dotenv").config();
 
@@ -11,6 +12,7 @@ app.use(express.json());
 app.use(cors());
 app.use(familyRouter);
 app.use(guestRouter);
+app.use(adminRouter);
 
 mongoose.connect(process.env.MONGODB);
 
