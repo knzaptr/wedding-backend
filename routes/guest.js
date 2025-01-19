@@ -11,15 +11,15 @@ router.post("/guest", async (req, res) => {
   try {
     const { firstName, lastName, plusOne, family } = req.body;
 
-    if (!firstName || !lastName) {
+    if (!firstName.toLowerCase() || !lastName.toLowerCase()) {
       return res
         .status(409)
         .json({ message: "Veuillez remplir tous les champs" });
     }
 
     const verifyGuest = await Guest.findOne({
-      firstName: firstName,
-      lastName: lastName,
+      firstName: firstName.toLowerCase(),
+      lastName: lastName.toLowerCase(),
     });
 
     if (verifyGuest) {
