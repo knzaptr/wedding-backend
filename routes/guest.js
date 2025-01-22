@@ -75,6 +75,50 @@ router.get("/guest", async (req, res) => {
   }
 });
 
+/*Add family and members */
+// Route pour ajouter une famille et ses membres
+router.post("/add-family", async (req, res) => {
+  const { familyName, members } = req.body;
+
+  if (!familyName || !Array.isArray(members) || members.length === 0) {
+    return res.status(400).json({ error: "Données invalides." });
+  }
+
+  try {
+    // Créer une nouvelle famille
+    const family = new Family({ familyName, members: [] });
+    await family.save();
+
+    // Créer les invités (membres) et les associer à la famille
+    const guestPromises = members.map(async (member) => {
+      const guest = new Guest({
+        firstName: member.firstName,
+        lastName: member.lastName,
+        family: family._id, // Associer l'invité à la famille
+      });
+      const savedGuest = await guest.save();
+
+      // Ajouter l'invité à la liste des membres de la famille
+      family.members.push(savedGuest._id);
+      return savedGuest;
+    });
+
+    // Attendre que tous les invités soient sauvegardés
+    await Promise.all(guestPromises);
+
+    // Mettre à jour la famille avec la liste des membres
+    await family.save();
+
+    return res
+      .status(201)
+      .json({ message: "Famille et membres ajoutés avec succès.", family });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: "Erreur lors de l'ajout de la famille." });
+  }
+});
 /*Afficher une famille */
 router.get("/family-member", async (req, res) => {
   try {
