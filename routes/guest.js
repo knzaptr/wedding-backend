@@ -137,16 +137,20 @@ router.put("/guest", async (req, res) => {
   try {
     const { firstName, lastName, mealChoice, allergies, isComing } = req.body;
 
+    const guestToDisplay = await Guest.findOne({
+      firstName: firstName,
+      lastName: lastName,
+    });
+
+    if (!guestToDisplay) {
+      return res.status(404).json({ message: "Invité non trouvé" });
+    }
+
     if (!firstName || !lastName) {
       return res
         .status(409)
         .json({ message: "Veuillez remplir tous les champs" });
     }
-
-    const guestToDisplay = await Guest.findOne({
-      firstName: firstName,
-      lastName: lastName,
-    });
 
     guestToDisplay.allergies = allergies;
 
