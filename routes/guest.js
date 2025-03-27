@@ -244,4 +244,101 @@ router.post("/plusOne", async (req, res) => {
   }
 });
 
+router.post("/addGuests", async (req, res) => {
+  try {
+    const { firstName, lastName, additionalGuests } = req.body;
+
+    // Vérifier les champs obligatoires
+    if (
+      !firstName ||
+      !lastName ||
+      !Array.isArray(additionalGuests) ||
+      additionalGuests.length === 0
+    ) {
+      return res.status(400).json({
+        error:
+          "Veuillez fournir un invité principal et au moins un invité supplémentaire.",
+      });
+    }
+
+    // Trouver l'invité principal
+    const mainGuest = await Guest.findOne({ firstName, lastName });
+
+    if (!mainGuest) {
+      return res.status(404).json({ error: "Invité principal introuvable." });
+    }
+
+    // Vérifier si l'invité principal a une limite de plusFamily
+    if (!mainGuest.plusFamily || mainGuest.plusFamily <= 0) {
+      return res.status(400).json({
+        error: "Cet invité ne peut pas ajouter de membres supplémentaires.",
+      });
+    }
+
+    // Vérifier si le nombre de personnes à ajouter dépasse la limite
+    if (additionalGuests.length > mainGuest.plusFamily) {
+      return res.status(400).json({
+        error: `Vous ne pouvez ajouter que ${mainGuest.plusFamily} personne(s) maximum.`,
+      });
+    }
+
+    // Vérifier si l'invité principal a déjà une famille
+    let family;
+    if (mainGuest.family) {
+      family = await Family.findById(mainGuest.family);
+    } else {
+      // Créer une nouvelle famille
+      family = new Family({
+        family_name: lastName,
+        members: [mainGuest._id],
+      });
+      await family.save();
+
+      // Associer l'invité principal à cette famille
+      mainGuest.family = family._id;
+      await mainGuest.save();
+    }
+
+    // Ajouter les nouveaux invités
+    const newGuests = [];
+    for (const guest of additionalGuests) {
+      const { firstName, lastName, isComing, allergies } = guest;
+
+      if (!firstName || !lastName) {
+        return res
+          .status(400)
+          .json({ error: "Chaque invité doit avoir un prénom et un nom." });
+      }
+
+      const newGuest = new Guest({
+        firstName,
+        lastName,
+        isComing,
+        allergies,
+        family: family._id,
+        plusOneOf: `${lastName} ${firstName}`,
+      });
+
+      await newGuest.save();
+      newGuests.push(newGuest._id);
+    }
+
+    // Mettre à jour la famille avec les nouveaux membres
+    family.members.push(...newGuests);
+    await family.save();
+
+    // Mettre à jour la valeur de plusFamily après l'ajout des invités
+    mainGuest.plusFamily -= additionalGuests.length;
+    await mainGuest.save();
+
+    return res.status(201).json({
+      message: "Invités ajoutés avec succès",
+      remainingSlots: mainGuest.plusFamily,
+      family,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
